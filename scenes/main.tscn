@@ -1,9 +1,45 @@
-[gd_scene load_steps=5 format=3 uid="uid://w012a73ncl50"]
+[gd_scene load_steps=14 format=3 uid="uid://w012a73ncl50"]
 
 [ext_resource type="Script" uid="uid://c8610cf63qoni" path="res://src/main.gd" id="1_bwv4t"]
 [ext_resource type="Script" uid="uid://ddx0ay0ns3kfg" path="res://src/game_world.gd" id="2_ui086"]
 [ext_resource type="Script" uid="uid://d2ymyxjsjwruo" path="res://src/hex_grid.gd" id="3_74qdm"]
 [ext_resource type="Script" uid="uid://c0lhe42qj5rsp" path="res://src/gui.gd" id="3_pkoaw"]
+[ext_resource type="Texture2D" uid="uid://d36maupehyuin" path="res://assets/ui/greySheet.png" id="5_tbgi4"]
+[ext_resource type="Texture2D" uid="uid://deiuet3s66xdi" path="res://assets/ui/greenSheet.png" id="6_tefeu"]
+[ext_resource type="FontFile" uid="uid://rpwgigujrbg1" path="res://assets/ui/Kenney Thick.ttf" id="7_o6xl0"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_o6xl0"]
+texture = ExtResource("6_tefeu")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 7.0
+region_rect = Rect2(0, 0, 190, 48)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_tefeu"]
+texture = ExtResource("6_tefeu")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 8.0
+region_rect = Rect2(0, 94, 190, 49)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_tipki"]
+texture = ExtResource("6_tefeu")
+texture_margin_left = 6.0
+texture_margin_top = 4.0
+texture_margin_right = 6.0
+texture_margin_bottom = 8.0
+region_rect = Rect2(190, 0, 190, 48)
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_jyhfs"]
+
+[sub_resource type="Sky" id="Sky_tbgi4"]
+sky_material = SubResource("ProceduralSkyMaterial_jyhfs")
+
+[sub_resource type="Environment" id="Environment_tefeu"]
+background_mode = 2
+sky = SubResource("Sky_tbgi4")
 
 [node name="Main" type="Node"]
 script = ExtResource("1_bwv4t")
@@ -18,14 +54,99 @@ metadata/_custom_type_script = "uid://d2ymyxjsjwruo"
 [node name="GUI" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 1280.0
+offset_bottom = 720.0
 script = ExtResource("3_pkoaw")
+
+[node name="GameplayUI" type="MarginContainer" parent="GUI"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="GUI/GameplayUI"]
+custom_minimum_size = Vector2(120, 80)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="TestPanel" type="NinePatchRect" parent="GUI/GameplayUI/MarginContainer"]
+layout_mode = 2
+texture = ExtResource("5_tbgi4")
+region_rect = Rect2(0, 332, 190, 48)
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 8
+
+[node name="LevelSelectUI" type="MarginContainer" parent="GUI"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MenuContainer" type="VBoxContainer" parent="GUI/LevelSelectUI"]
+custom_minimum_size = Vector2(400, 300)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_constants/separation = 25
+
+[node name="MenuBG" type="NinePatchRect" parent="GUI/LevelSelectUI/MenuContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("5_tbgi4")
+region_rect = Rect2(190, 99, 100, 99)
+patch_margin_left = 5
+patch_margin_top = 5
+patch_margin_right = 5
+patch_margin_bottom = 5
+
+[node name="ButtonUI" type="MarginContainer" parent="GUI/LevelSelectUI/MenuContainer/MenuBG"]
+custom_minimum_size = Vector2(320, 240)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -120.0
+offset_right = 160.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ButtonContainer" type="VBoxContainer" parent="GUI/LevelSelectUI/MenuContainer/MenuBG/ButtonUI"]
+layout_mode = 2
+
+[node name="StartButton" type="Button" parent="GUI/LevelSelectUI/MenuContainer/MenuBG/ButtonUI/ButtonContainer"]
+custom_minimum_size = Vector2(300, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_colors/font_outline_color = Color(0, 0.168627, 0.14902, 1)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("7_o6xl0")
+theme_override_styles/hover = SubResource("StyleBoxTexture_o6xl0")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_tefeu")
+theme_override_styles/normal = SubResource("StyleBoxTexture_tipki")
+text = "START LEVEL"
+
+[node name="separator" type="Control" parent="GUI/LevelSelectUI/MenuContainer"]
+layout_mode = 2
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 5, 0.685539)
 
-[node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.466352, 0)
-omni_range = 500.0
-omni_attenuation = 0.0
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_tefeu")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 8.30574, 0)
+directional_shadow_mode = 0
