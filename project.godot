@@ -19,6 +19,14 @@ config/icon="res://icon.svg"
 
 GameVariables="*res://src/game_variables.gd"
 
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="viewport"
+window/stretch/aspect="expand"
+mouse_cursor/custom_image="uid://8cd5u4ln8asl"
+
 [editor]
 
 version_control/plugin_name="GitPlugin"
