@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://braedw8i8jln0"]
+
+[ext_resource type="PackedScene" uid="uid://cuygmchlgrwd7" path="res://assets/grass.fbx" id="1_cfcg3"]
+
+[node name="Unplaceables" type="Node3D"]
+
+[node name="grass" parent="." instance=ExtResource("1_cfcg3")]

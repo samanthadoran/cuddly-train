@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://bbdnj4jf1j2ic"]
+
+[ext_resource type="PackedScene" uid="uid://d12flf8js2jmk" path="res://assets/river-straight.fbx" id="1_vjsqp"]
+
+[node name="Placeables" type="Node3D"]
+
+[node name="river-straight" parent="." instance=ExtResource("1_vjsqp")]

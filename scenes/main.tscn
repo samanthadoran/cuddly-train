@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://w012a73ncl50"]
+
+[ext_resource type="Script" uid="uid://c8610cf63qoni" path="res://src/main.gd" id="1_bwv4t"]
+[ext_resource type="Script" uid="uid://ddx0ay0ns3kfg" path="res://src/game_world.gd" id="2_ui086"]
+[ext_resource type="Script" uid="uid://d2ymyxjsjwruo" path="res://src/hex_grid.gd" id="3_74qdm"]
+[ext_resource type="Script" uid="uid://c0lhe42qj5rsp" path="res://src/gui.gd" id="3_pkoaw"]
+
+[node name="Main" type="Node"]
+script = ExtResource("1_bwv4t")
+
+[node name="World" type="Node3D" parent="."]
+script = ExtResource("2_ui086")
+
+[node name="Hex_Grid" type="Node3D" parent="World"]
+script = ExtResource("3_74qdm")
+metadata/_custom_type_script = "uid://d2ymyxjsjwruo"
+
+[node name="GUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("3_pkoaw")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-1, 8.74228e-08, 3.82137e-15, 0, -4.37114e-08, 1, 8.74228e-08, 1, 4.37114e-08, 0, 5, 0)
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.466352, 0)
+omni_range = 500.0
+omni_attenuation = 0.0

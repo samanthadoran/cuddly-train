@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cdyaf5hui85j2"]
+
+[ext_resource type="Script" uid="uid://c01lwb0pe13ad" path="res://src/hex.gd" id="1_4b57h"]
+
+[node name="Hex" type="Node3D"]
+script = ExtResource("1_4b57h")
+metadata/_custom_type_script = "uid://c01lwb0pe13ad"
