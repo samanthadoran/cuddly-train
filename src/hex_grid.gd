@@ -9,20 +9,41 @@ var hex_rivers: Array[Hex] = []
 var hex_rivers_size := hex_rivers.size()
 const HEX_SCALE := 1.0
 
-enum Directions {NE, E, SE, SW, W, NW}
-
 @export var grid_width := 5
 @export var grid_length := 5
 @export var placeable_tile_library: MeshLibrary = preload("res://assets/mesh_libraries/placeables.tres")
 @export var unplaceable_tile_library: MeshLibrary = preload("res://assets/mesh_libraries/unplaceables.tres")
+var grid = {}
+var selection = Vector2i.ZERO
 
 const HEX = preload("res://scenes/hex/hex.tscn")
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_left"):
+		if selection.x > 0:
+			selection.x -= 1
+	if event.is_action_pressed("ui_right"):
+		if selection.x < grid_width - 1:
+			selection.x += 1
+	if event.is_action_pressed("ui_up"):
+		if selection.y > 0:
+			selection.y -= 1
+	if event.is_action_pressed("ui_down"):
+		if selection.y < grid_length - 1:
+			selection.y += 1
+	if event.is_action_pressed("ui_accept"):
+		var hex = grid[selection]
+		hex.hex_type = Hex.Hex_Type.Played
+		var first_dir: Path.Directions = (randi() % 6) as Path.Directions
+		var second_dir: Path.Directions = (randi() % 6) as Path.Directions
+		hex.connections.path = [first_dir, second_dir]
+		hex.mesh.set_mesh(placeable_tile_library.get_item_mesh(0))
 
 func _ready() -> void:
 	_generate_hex_grid()
 
 func create_hex(type: Hex.Hex_Type, mesh_lib: MeshLibrary, pos: Vector2i):
-	return Hex.new(int(type), mesh_lib, pos)
+	return Hex.new(type, mesh_lib, pos)
 
 #function oddr_offset_to_pixel(hex):
 	#// hex to cartesian
@@ -46,31 +67,24 @@ func _generate_hex_grid():
 		for x in grid_width:
 			var hex = create_hex(Hex.Hex_Type.Unplayable, unplaceable_tile_library, Vector2i(x, y))
 			add_child(hex)
+			grid[hex.offset_coordinates] = hex
 			hex.translate(odd_row_right_hex_to_pixel(hex))
 
 # TODO(Samantha): Raycast onto invisible/transparent hexes to select which one the user can place?
 
-#var oddr_direction_differences = [
-	#// even rows 
-	#[[+1,  0], [ 0, -1], [-1, -1], 
-	 #[-1,  0], [-1, +1], [ 0, +1]],
-	#// odd rows 
-	#[[+1,  0], [+1, -1], [ 0, -1], 
-	 #[-1,  0], [ 0, +1], [+1, +1]],
-#]
-#
-#function oddr_offset_neighbor(hex, direction):
-	#var parity = hex.row & 1
-	#var diff = oddr_direction_differences[parity][direction]
-	#return OffsetCoord(hex.col + diff[0], hex.row + diff[1])
-	
+#enum Directions {NE, E, SE, SW, W, NW}
+
 const oddr_direction_differences = [
 	# Even Rows
-	[Vector2i(1, 0), Vector2i(0, -1), Vector2i(-1, -1),
-	Vector2i(-1, 0), Vector2i(-1, 1), Vector2i(0, 1)],
+	#     NE               E               SE
+	[Vector2i(0, -1), Vector2i(1, 0), Vector2i(0, 1),
+	#     SW               W               NW
+	Vector2i(-1, 1), Vector2i(-1, 0), Vector2i(-1, -1)],
 	# Odd Rows
-	[Vector2i(1, 0), Vector2i(1, -1), Vector2i(0, -1),
-	Vector2i(-1, 0), Vector2i(0, 1), Vector2i(1, 1)]
+	#     NE               E               SE
+	[Vector2i(1, -1), Vector2i(1, 0), Vector2i(1, 1),
+	#     SW               W               NW
+	Vector2i(0, 1), Vector2i(-1, 0), Vector2i(0, -1)]
 ]
 
 func oddr_offset_neighbors_coordinates(hex: Hex) -> Array[Vector2i]:
@@ -79,23 +93,3 @@ func oddr_offset_neighbors_coordinates(hex: Hex) -> Array[Vector2i]:
 	for direction in oddr_direction_differences[0 if hex.row % 2 == 0 else 1]:
 		result.append(coords + direction)
 	return result
-
-#func position_to_xyz(hex: Hex) -> Vector3:
-	#var cube_coordinates = hex.cube_coordinates
-	#var x = sqrt(3) * cube_coordinates.x + sqrt(3)/2.0 * cube_coordinates.y
-	#var y = 3.0 / 2.0 * cube_coordinates.y
-	#return Vector3(x,0,y)
-#
-#const DIRECTION_VECTORS = [Vector3i(1,0,-1),
-	#Vector3i(1,-1,0), 
-	#Vector3i(0,-1,1),
-	#Vector3i(-1,0,1),
-	#Vector3i(-1,1,0),
-	#Vector3i(0,1,-1)]
-#
-#func neighbour_locations(hex: Hex) -> Array[Vector3i]:
-	#var cube_coordinates = hex.cube_coordinates
-	#var result = []
-	#for direction in DIRECTION_VECTORS:
-		#result.add(cube_coordinates + direction)
-	#return result
