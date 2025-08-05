@@ -18,6 +18,21 @@ var selection = Vector2i.ZERO
 
 const HEX = preload("res://scenes/hex/hex.tscn")
 
+func play_hex(hex: Hex):
+	hex.hex_type = Hex.Hex_Type.Played
+	var first_dir: Path.Directions = (randi() % 6) as Path.Directions
+	var second_dir: Path.Directions = (randi() % 6) as Path.Directions
+	
+	# TODO(Samantha): This is awful.
+	while second_dir == first_dir:
+		second_dir = (randi() % 6) as Path.Directions
+	hex.connections = Path.new(first_dir, second_dir)
+	hex.mesh.set_mesh(hex.determine_hex_mesh(placeable_tile_library))
+	
+	# Zero the rotation in case we ever allow playing over played hexes.
+	hex.mesh.rotation = Vector3(0,0,0)
+	hex.mesh.rotate_y(hex.determine_hex_rotation_in_radians())
+
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_left"):
 		if selection.x > 0:
@@ -32,27 +47,13 @@ func _input(event: InputEvent) -> void:
 		if selection.y < grid_length - 1:
 			selection.y += 1
 	if event.is_action_pressed("ui_accept"):
-		var hex = grid[selection]
-		hex.hex_type = Hex.Hex_Type.Played
-		var first_dir: Path.Directions = (randi() % 6) as Path.Directions
-		var second_dir: Path.Directions = (randi() % 6) as Path.Directions
-		hex.connections.path = [first_dir, second_dir]
-		hex.mesh.set_mesh(placeable_tile_library.get_item_mesh(0))
+		play_hex(grid[selection])
 
 func _ready() -> void:
 	_generate_hex_grid()
 
 func create_hex(type: Hex.Hex_Type, mesh_lib: MeshLibrary, pos: Vector2i):
 	return Hex.new(type, mesh_lib, pos)
-
-#function oddr_offset_to_pixel(hex):
-	#// hex to cartesian
-	#var x = sqrt(3) * (hex.col + 0.5 * (hex.row&1))
-	#var y =    3./2 * hex.row
-	#// scale cartesian coordinates
-	#x = x * size
-	#y = y * size
-	#return Point(x, y)
 
 func odd_row_right_hex_to_pixel(hex) -> Vector3:
 	var coords = hex.offset_coordinates

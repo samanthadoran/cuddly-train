@@ -1,7 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://bbdnj4jf1j2ic"]
+[gd_scene load_steps=4 format=3 uid="uid://bbdnj4jf1j2ic"]
 
 [ext_resource type="PackedScene" uid="uid://d12flf8js2jmk" path="res://assets/river-straight.fbx" id="1_vjsqp"]
+[ext_resource type="PackedScene" uid="uid://ca2ect48kl4fo" path="res://assets/river-corner-sharp.fbx" id="2_rsy5q"]
+[ext_resource type="PackedScene" uid="uid://cuf220ai13dak" path="res://assets/river-corner.fbx" id="3_pla1w"]
 
 [node name="Placeables" type="Node3D"]
 
 [node name="river-straight" parent="." instance=ExtResource("1_vjsqp")]
+
+[node name="river-corner-sharp" parent="." instance=ExtResource("2_rsy5q")]
+
+[node name="river-corner" parent="." instance=ExtResource("3_pla1w")]
