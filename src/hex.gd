@@ -26,24 +26,27 @@ func determine_hex_mesh(mesh_lib: MeshLibrary) -> Mesh:
 	
 	return mesh_lib.get_item_mesh(mesh_lib_index)
 
-func determine_hex_rotation() -> int:
-	match connections.path_distance():
-		# Sharp
-		1, 5:
-			pass
-		# Regular Corner
-		2, 4:
-			pass
-		# Straight
-		3:
-			pass
-	return 0
+func determine_hex_rotation_in_radians() -> float:
+	# Rotate in increments of pi/6 radians
+	
+	# TODO(Samantha): This should account for directional specials.
+	# TODO(Samantha): This breaks for regular corners?
+	
+	const ROTATION_INCREMENT = PI / 3.0
+	var first_connection = min(connections.path[0], connections.path[1])
+	if connections.path_distance() > 3:
+		first_connection = max(connections.path[0], connections.path[1])
+	
+	var steps_from_west = Path.Directions.W - first_connection
+	return (steps_from_west * ROTATION_INCREMENT)
 
 func _init(type: Hex_Type, mesh_lib: MeshLibrary, coordinates: Vector2i):
+	# TODO(Samantha): Add a path argument
 	hex_type = type
 	mesh = MeshInstance3D.new()
 	if type == Hex_Type.Playable or type == Hex_Type.Played:
 		mesh.set_mesh(determine_hex_mesh(mesh_lib))
+		mesh.rotate_y(determine_hex_rotation_in_radians())
 	else:
 		# Hard coded grass
 		mesh.set_mesh(mesh_lib.get_item_mesh(0))
