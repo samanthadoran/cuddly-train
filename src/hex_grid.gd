@@ -21,11 +21,9 @@ const HEX = preload("res://scenes/hex/hex.tscn")
 func play_hex(hex: Hex):
 	hex.hex_type = Hex.Hex_Type.Played
 	var first_dir: Path.Directions = (randi() % 6) as Path.Directions
-	var second_dir: Path.Directions = (randi() % 6) as Path.Directions
-	
-	# TODO(Samantha): This is awful.
-	while second_dir == first_dir:
-		second_dir = (randi() % 6) as Path.Directions
+	# Make sure the second direction can't be equal to the first.
+	var second_dir: Path.Directions = ((first_dir + randi_range(1, 5)) % 6) as Path.Directions
+
 	hex.connections = Path.new(first_dir, second_dir)
 	hex.mesh.set_mesh(hex.determine_hex_mesh(placeable_tile_library))
 	
