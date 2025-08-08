@@ -3,8 +3,16 @@ extends Node
 class_name Path
 
 enum Directions {NE, E, SE, SW, W, NW, ORIGIN, DESTINATION, UNCONNECTED}
+enum RotationDirections {CLOCKWISE = 1, COUNTERCLOCKWISE = -1}
+
+const NUMBER_OF_NONSPECIAL_DIRECTIONS = 6
 
 var path: Array[Directions] = [Directions.UNCONNECTED, Directions.UNCONNECTED]
+
+func rotate(direction: RotationDirections):
+	path[0] = ((path[0] + direction) % NUMBER_OF_NONSPECIAL_DIRECTIONS) as Directions
+	path[1] = ((path[1] + direction) % NUMBER_OF_NONSPECIAL_DIRECTIONS) as Directions
+	normalize_path()
 
 func _init(first_direction: Directions = Directions.UNCONNECTED, second_direction: Directions = Directions.UNCONNECTED):
 	path = [first_direction, second_direction]
