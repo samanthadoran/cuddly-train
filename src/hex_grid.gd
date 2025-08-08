@@ -97,7 +97,7 @@ const oddr_direction_differences = [
 
 func oddr_offset_neighbors_coordinates(hex: Hex) -> Array[Vector2i]:
 	var coords = hex.offset_coordinates
-	var result = []
-	for direction in oddr_direction_differences[0 if hex.row % 2 == 0 else 1]:
+	var result: Array[Vector2i] = []
+	for direction in oddr_direction_differences[0 if coords.y % 2 == 0 else 1]:
 		result.append(coords + direction)
 	return result
