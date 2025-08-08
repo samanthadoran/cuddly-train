@@ -20,9 +20,9 @@ const HEX = preload("res://scenes/hex/hex.tscn")
 
 func play_hex(hex: Hex):
 	hex.hex_type = Hex.Hex_Type.Played
-	var first_dir: Path.Directions = (randi() % 6) as Path.Directions
+	var first_dir: Path.Directions = (randi() % Path.NUMBER_OF_NONSPECIAL_DIRECTIONS) as Path.Directions
 	# Make sure the second direction can't be equal to the first.
-	var second_dir: Path.Directions = ((first_dir + randi_range(1, 5)) % 6) as Path.Directions
+	var second_dir: Path.Directions = ((first_dir + randi_range(1, 5)) % Path.NUMBER_OF_NONSPECIAL_DIRECTIONS) as Path.Directions
 
 	hex.connections = Path.new(first_dir, second_dir)
 	hex.mesh.set_mesh(hex.determine_hex_mesh(placeable_tile_library))
@@ -32,6 +32,7 @@ func play_hex(hex: Hex):
 	hex.mesh.rotate_y(hex.determine_hex_rotation_in_radians())
 
 func _input(event: InputEvent) -> void:
+	# TODO(Samantha): There has to be a better way than an if/else chain.
 	if event.is_action_pressed("ui_left"):
 		if selection.x > 0:
 			selection.x -= 1
@@ -46,6 +47,14 @@ func _input(event: InputEvent) -> void:
 			selection.y += 1
 	if event.is_action_pressed("ui_accept"):
 		play_hex(grid[selection])
+		
+	# TODO(Samantha): These are mapped to Shift + R and R, without the returns, they both trigger??
+	if event.is_action_pressed("rotate_hex_counterclockwise"):
+		grid[selection].rotate_hex(Path.RotationDirections.COUNTERCLOCKWISE)
+		return
+	if event.is_action_pressed("rotate_hex_clockwise"):
+		grid[selection].rotate_hex(Path.RotationDirections.CLOCKWISE)
+		return
 
 func _ready() -> void:
 	_generate_hex_grid()

@@ -12,6 +12,10 @@ var modifier: Modifier
 
 #enum Directions {NE, E, SE, SW, W, NW}
 
+func rotate_hex(direction: Path.RotationDirections):
+	connections.rotate(direction)
+	mesh.rotation = Vector3(0, determine_hex_rotation_in_radians(), 0)
+
 func determine_hex_mesh(mesh_lib: MeshLibrary) -> Mesh:
 	var mesh_lib_index = 0
 	match connections.path_distance():
