@@ -10,7 +10,10 @@ var hex_type: Hex_Type
 var connections: Path = Path.new()
 var modifier: Modifier
 
+## Rotates a hex one step in either a clockwise or counterclockwise direction.
+## This applys rotation to the model and to the internal path connections.
 func rotate_hex(direction: Path.RotationDirections):
+	# TODO(Samantha): Should this be moved out to hex grid? It's not doing much heavy lifting.
 	connections.rotate(direction)
 	mesh.rotation = Vector3(0, determine_hex_rotation_in_radians(), 0)
 
@@ -37,6 +40,10 @@ func determine_hex_mesh(mesh_lib: MeshLibrary) -> Mesh:
 	
 	return mesh_lib.get_item_mesh(mesh_lib_index)
 
+
+## Determines the amount of rotation to apply to a given hex's mesh based upon
+## its type and connections. This is necessary to align the internal representation with what the
+## user sees.
 func determine_hex_rotation_in_radians() -> float:
 	# Rotate in increments of pi/6 radians
 	

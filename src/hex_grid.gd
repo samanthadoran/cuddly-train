@@ -79,6 +79,7 @@ func _make_origin_hex(offset_coordinates: Vector2i) -> Hex:
 	var path = Path.new(Path.Directions.ORIGIN, connected_direction)
 	return Hex.new(Hex.Hex_Type.Unplayable, unplaceable_tile_library, offset_coordinates, path)
 
+## Recursive function to walk along connected hexes. Returns the number of connected hexes.
 func walk_graph(hex: Hex, from: Path.Directions = Path.Directions.ORIGIN) -> int:
 	# TODO(Samantha): This doesn't sanity check a hex having a malformed path.
 	# Garbage in, garbage out, I guess.
@@ -119,6 +120,7 @@ func _generate_hex_grid():
 
 # TODO(Samantha): Raycast onto invisible/transparent hexes to select which one the user can place?
 
+## Vector directions for neighbor spaces from any given hex. Has an entry for both even and odd rows.
 const oddr_direction_differences = [
 	# Even Rows
 	#     NE               E               SE
@@ -139,6 +141,7 @@ func oddr_offset_neighbors_coordinates(hex: Hex) -> Array[Vector2i]:
 		result.append(coords + direction)
 	return result
 
+## Given any arbitrary hex, returns a dictionary with a mapping of Path.Directions -> neighboring Hexes
 func get_neighbors(hex: Hex) -> Dictionary:
 	var neighbors = {}
 	var neighbor_locations = oddr_offset_neighbors_coordinates(hex)
