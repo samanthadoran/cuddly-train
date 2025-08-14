@@ -1,7 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://braedw8i8jln0"]
+[gd_scene load_steps=3 format=3 uid="uid://braedw8i8jln0"]
 
 [ext_resource type="PackedScene" uid="uid://cuygmchlgrwd7" path="res://assets/grass.fbx" id="1_cfcg3"]
+[ext_resource type="PackedScene" uid="uid://bt1ve5qd1a2al" path="res://assets/river-start.fbx" id="2_hsk1i"]
 
 [node name="Unplaceables" type="Node3D"]
 
 [node name="grass" parent="." instance=ExtResource("1_cfcg3")]
+
+[node name="river-start" parent="." instance=ExtResource("2_hsk1i")]

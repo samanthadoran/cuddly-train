@@ -52,6 +52,7 @@ script = ExtResource("3_74qdm")
 metadata/_custom_type_script = "uid://d2ymyxjsjwruo"
 
 [node name="GUI" type="Control" parent="."]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 1280.0

@@ -15,6 +15,7 @@ const HEX_SCALE := 1.0
 @export var unplaceable_tile_library: MeshLibrary = preload("res://assets/mesh_libraries/unplaceables.tres")
 var grid = {}
 var selection = Vector2i.ZERO
+var origin_hex: Hex
 
 const HEX = preload("res://scenes/hex/hex.tscn")
 
@@ -47,13 +48,16 @@ func _input(event: InputEvent) -> void:
 			selection.y += 1
 	if event.is_action_pressed("ui_accept"):
 		play_hex(grid[selection])
-		
+
 	# TODO(Samantha): These are mapped to Shift + R and R, without the returns, they both trigger??
 	if event.is_action_pressed("rotate_hex_counterclockwise"):
 		grid[selection].rotate_hex(Path.RotationDirections.COUNTERCLOCKWISE)
 		return
 	if event.is_action_pressed("rotate_hex_clockwise"):
 		grid[selection].rotate_hex(Path.RotationDirections.CLOCKWISE)
+		return
+	if event.is_action_pressed("show_score"):
+		calculate_score()
 		return
 
 func _ready() -> void:
@@ -70,17 +74,50 @@ func odd_row_right_hex_to_pixel(hex) -> Vector3:
 	y = y * .576
 	return Vector3(x, 0, y)
 
+func _make_origin_hex(offset_coordinates: Vector2i) -> Hex:
+	var connected_direction: Path.Directions = (randi() % Path.NUMBER_OF_NONSPECIAL_DIRECTIONS) as Path.Directions
+	var path = Path.new(Path.Directions.ORIGIN, connected_direction)
+	return Hex.new(Hex.Hex_Type.Unplayable, unplaceable_tile_library, offset_coordinates, path)
+
+func walk_graph(hex: Hex, from: Path.Directions = Path.Directions.ORIGIN) -> int:
+	# TODO(Samantha): This doesn't sanity check a hex having a malformed path.
+	# Garbage in, garbage out, I guess.
+	assert(not hex.connections.is_unconnected(), "How are we at a node with an unconnected part?")
+	assert(not hex.connections.path[0] == hex.connections.path[1], "What does it even mean for the same direction to have two connections?")
+
+	var neighbors = get_neighbors(hex)
+
+	# We only want to check in the direction that we weren't just at!
+	var index_of_from = hex.connections.path.find(from)
+	var direction_to_check = hex.connections.path[(index_of_from + 1) % 2]
+	print("Was From: %s \t Checking direction: %s" % [Path.Directions.find_key(from), Path.Directions.find_key(direction_to_check)])
+
+	if neighbors.has(direction_to_check):
+		var neighbor: Hex = neighbors[direction_to_check]
+		if neighbor.connections.has_opposite_direction(direction_to_check):
+				return 1 + (walk_graph(neighbor, Path.make_opposite_direction(direction_to_check)))
+	return 0
+
+func calculate_score():
+	var score = walk_graph(origin_hex)
+	print("Your score is: %s" % score)
+
 func _generate_hex_grid():
+	origin_hex = _make_origin_hex(Vector2i(grid_width/2, grid_length/2))
 	for y in grid_length:
 		for x in grid_width:
+			if Vector2i(x, y) == origin_hex.offset_coordinates:
+				add_child(origin_hex)
+				grid[origin_hex.offset_coordinates] = origin_hex
+				origin_hex.translate(odd_row_right_hex_to_pixel(origin_hex))
+				continue
 			var hex = create_hex(Hex.Hex_Type.Unplayable, unplaceable_tile_library, Vector2i(x, y))
 			add_child(hex)
 			grid[hex.offset_coordinates] = hex
 			hex.translate(odd_row_right_hex_to_pixel(hex))
 
-# TODO(Samantha): Raycast onto invisible/transparent hexes to select which one the user can place?
 
-#enum Directions {NE, E, SE, SW, W, NW}
+# TODO(Samantha): Raycast onto invisible/transparent hexes to select which one the user can place?
 
 const oddr_direction_differences = [
 	# Even Rows
@@ -101,3 +138,11 @@ func oddr_offset_neighbors_coordinates(hex: Hex) -> Array[Vector2i]:
 	for direction in oddr_direction_differences[0 if coords.y % 2 == 0 else 1]:
 		result.append(coords + direction)
 	return result
+
+func get_neighbors(hex: Hex) -> Dictionary:
+	var neighbors = {}
+	var neighbor_locations = oddr_offset_neighbors_coordinates(hex)
+	for i in range(6):
+		if grid.has(neighbor_locations[i]):
+			neighbors[i as Path.Directions] = grid[neighbor_locations[i]]
+	return neighbors
