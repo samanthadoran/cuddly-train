@@ -33,9 +33,9 @@ func rotate(rotation_direction: RotationDirections):
 
 	# Unfortunately these are required becdause modulo doesn't work this way for negatives =(
 	if path[0] < 0:
-		path[0] = NUMBER_OF_NONSPECIAL_DIRECTIONS + path[0]
+		path[0] = (NUMBER_OF_NONSPECIAL_DIRECTIONS + path[0]) as Directions
 	if path[1] < 0:
-		path[1] = NUMBER_OF_NONSPECIAL_DIRECTIONS + path[1]
+		path[1] = (NUMBER_OF_NONSPECIAL_DIRECTIONS + path[1]) as Directions
 
 	normalize_path()
 
