@@ -10,14 +10,21 @@ var hex_type: Hex_Type
 var connections: Path = Path.new()
 var modifier: Modifier
 
-#enum Directions {NE, E, SE, SW, W, NW}
-
 func rotate_hex(direction: Path.RotationDirections):
 	connections.rotate(direction)
 	mesh.rotation = Vector3(0, determine_hex_rotation_in_radians(), 0)
 
 func determine_hex_mesh(mesh_lib: MeshLibrary) -> Mesh:
 	var mesh_lib_index = 0
+
+	if connections.is_unconnected():
+		mesh_lib_index = mesh_lib.find_item_by_name("grass")
+		return mesh_lib.get_item_mesh(mesh_lib_index)
+
+	if connections.is_origin_or_destination():
+		mesh_lib_index = mesh_lib.find_item_by_name("river_start")
+		return mesh_lib.get_item_mesh(mesh_lib_index)
+
 	match connections.path_distance():
 		0:
 			push_error("To itself?")
@@ -33,27 +40,28 @@ func determine_hex_mesh(mesh_lib: MeshLibrary) -> Mesh:
 func determine_hex_rotation_in_radians() -> float:
 	# Rotate in increments of pi/6 radians
 	
-	# TODO(Samantha): This should account for directional specials.
-	# TODO(Samantha): This breaks for regular corners?
+	# This is a "grass" or unplayed, apply no rotation.
+	if connections.is_unconnected():
+		return 0
 	
 	const ROTATION_INCREMENT = PI / 3.0
 	var first_connection = min(connections.path[0], connections.path[1])
 	if connections.path_distance() > 3:
 		first_connection = max(connections.path[0], connections.path[1])
-	
+
+	# We cannot rotate an origin or destination, rotate it by moving the edge connection.
+	if connections.is_origin_or_destination():
+		first_connection = connections.path[1]
+
 	var steps_from_west = Path.Directions.W - first_connection
 	return (steps_from_west * ROTATION_INCREMENT)
 
-func _init(type: Hex_Type, mesh_lib: MeshLibrary, coordinates: Vector2i):
-	# TODO(Samantha): Add a path argument
+func _init(type: Hex_Type, mesh_lib: MeshLibrary, coordinates: Vector2i, path: Path = Path.new(Path.Directions.UNCONNECTED, Path.Directions.UNCONNECTED)):
 	hex_type = type
+	connections = path
 	mesh = MeshInstance3D.new()
-	if type == Hex_Type.Playable or type == Hex_Type.Played:
-		mesh.set_mesh(determine_hex_mesh(mesh_lib))
-		mesh.rotate_y(determine_hex_rotation_in_radians())
-	else:
-		# Hard coded grass
-		mesh.set_mesh(mesh_lib.get_item_mesh(0))
+	mesh.set_mesh(determine_hex_mesh(mesh_lib))
+	mesh.rotate_y(determine_hex_rotation_in_radians())
 	offset_coordinates = coordinates
 	mesh.visible = true
 	visible = true
